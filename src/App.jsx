@@ -39,7 +39,7 @@ function App() {
   
   return (
     <div className="container">
-      <h1>Memory Card Game</h1>
+      <h1>Match 2</h1>
       
       {!inRoom ? (
         <div className="room-container">
