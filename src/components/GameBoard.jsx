@@ -5,7 +5,7 @@ function GameBoard({ cards, onCardClick, selectedSuits }) {
   const boardStyle = {
     display: 'grid',
     gridTemplateColumns: 'repeat(13, 1fr)',
-    gridTemplateRows: 'repeat(4, 1fr)',
+    gridTemplateRows: 'repeat(2, 1fr)',
     gap: '10px',
     width: '100%',
     maxWidth: '100%',

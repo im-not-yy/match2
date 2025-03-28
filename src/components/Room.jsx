@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import GameBoard from './GameBoard.jsx';
 import SuitSelection from './SuitSelection.jsx';
+import ChatBox from './ChatBox.jsx';
 
 function Room({ roomId, socket, playerId }) {
   const [gameState, setGameState] = useState({
@@ -142,6 +143,7 @@ function Room({ roomId, socket, playerId }) {
     <div className="room-container">
       <h2>Room: <span className="room-id">{roomId}</span></h2>
       {renderGameContent()}
+      <ChatBox socket={socket} roomId={roomId} playerId={playerId} />
     </div>
   );
 }

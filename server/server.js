@@ -30,17 +30,14 @@ const rooms = {};
 const cardValues = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 const suits = ['hearts', 'diamonds', 'clubs', 'spades'];
 
-// Create a new deck with only two suits
+// Create a deck with only one card of each value for two suits
 function createDeck(suit1, suit2) {
   const deck = [];
   
-  // Add cards for both suits
-  for (const suit of [suit1, suit2]) {
-    for (const value of cardValues) {
-      // Add each card twice for matching
-      deck.push({ value, suit, isFlipped: false, isMatched: false });
-      deck.push({ value, suit, isFlipped: false, isMatched: false });
-    }
+  // Add one card of each value for each suit
+  for (const value of cardValues) {
+    deck.push({ value, suit: suit1, isFlipped: false, isMatched: false });
+    deck.push({ value, suit: suit2, isFlipped: false, isMatched: false });
   }
   
   // Shuffle the deck
@@ -174,8 +171,8 @@ io.on('connection', (socket) => {
         const firstCard = room.cards[firstIndex];
         const secondCard = room.cards[secondIndex];
         
-        // Check if the cards match
-        if (firstCard.value === secondCard.value) {
+        // Check if the cards match (same value but different suits)
+        if (firstCard.value === secondCard.value && firstCard.suit !== secondCard.suit) {
           // Cards match
           firstCard.isMatched = true;
           secondCard.isMatched = true;
@@ -277,6 +274,14 @@ io.on('connection', (socket) => {
         }
       }
     });
+  });
+
+  // Add this with your other socket event handlers
+  socket.on('chat-message', ({ roomId, text, sender }) => {
+    const room = rooms[roomId];
+    if (room && room.players.includes(sender)) {
+      io.to(roomId).emit('chat-message', { text, sender });
+    }
   });
 });
 
