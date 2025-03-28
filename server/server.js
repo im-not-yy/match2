@@ -80,6 +80,8 @@ io.on('connection', (socket) => {
     
     // Send initial game state
     io.to(roomId).emit('game-state-update', rooms[roomId]);
+    
+    broadcastRoomsList();
   });
   
   // Join an existing room
@@ -110,6 +112,8 @@ io.on('connection', (socket) => {
       
       // Send updated game state to all players in the room
       io.to(roomId).emit('game-state-update', rooms[roomId]);
+      
+      broadcastRoomsList();
     } else {
       // Room doesn't exist or is full
       socket.emit('error', { message: 'Room not available' });
@@ -146,6 +150,8 @@ io.on('connection', (socket) => {
       
       // Send updated game state
       io.to(roomId).emit('game-state-update', room);
+      
+      broadcastRoomsList();
     }
   });
   
@@ -216,6 +222,8 @@ io.on('connection', (socket) => {
         // First card flipped, just update the state
         io.to(roomId).emit('game-state-update', { ...room });
       }
+      
+      broadcastRoomsList();
     }
   });
   
@@ -241,6 +249,8 @@ io.on('connection', (socket) => {
       
       // Send updated game state
       io.to(roomId).emit('game-state-update', room);
+      
+      broadcastRoomsList();
     }
   });
   
@@ -274,6 +284,8 @@ io.on('connection', (socket) => {
         }
       }
     });
+    
+    broadcastRoomsList();
   });
 
   // Add this with your other socket event handlers
@@ -283,7 +295,31 @@ io.on('connection', (socket) => {
       io.to(roomId).emit('chat-message', { text, sender });
     }
   });
+
+  // Add this near your other socket event handlers
+  socket.on('get-rooms', () => {
+    const roomsList = Object.entries(rooms).map(([id, room]) => ({
+      id,
+      playerCount: room.players.length,
+      status: room.status,
+      inProgress: room.status !== 'waiting'
+    }));
+    
+    socket.emit('rooms-update', roomsList);
+  });
 });
+
+// Update your existing create-room and join-room handlers to emit room updates
+const broadcastRoomsList = () => {
+  const roomsList = Object.entries(rooms).map(([id, room]) => ({
+    id,
+    playerCount: room.players.length,
+    status: room.status,
+    inProgress: room.status !== 'waiting'
+  }));
+  
+  io.emit('rooms-update', roomsList);
+};
 
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {

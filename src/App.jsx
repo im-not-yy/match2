@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import Room from './components/Room.jsx';
-import GameBoard from './components/GameBoard.jsx';
-import SuitSelection from './components/SuitSelection.jsx';
-import Card from './components/Card.jsx';
+import Lobby from './components/Lobby.jsx';
 
 // Change this to use environment variables or auto-detect the server URL
 const socket = io(import.meta.env.PROD ? window.location.origin : 'http://localhost:3001');
@@ -12,6 +10,7 @@ function App() {
   const [roomId, setRoomId] = useState('');
   const [inRoom, setInRoom] = useState(false);
   const [playerId, setPlayerId] = useState('');
+  const [showLobby, setShowLobby] = useState(true);
   
   useEffect(() => {
     socket.on('connect', () => {
@@ -21,6 +20,7 @@ function App() {
     socket.on('room-joined', (roomData) => {
       setRoomId(roomData.roomId);
       setInRoom(true);
+      setShowLobby(false);
     });
     
     return () => {
@@ -42,25 +42,11 @@ function App() {
       <h1>Match 2</h1>
       
       {!inRoom ? (
-        <div className="room-container">
-          <h2>Join or Create a Room</h2>
-          <div style={{ marginBottom: '20px' }}>
-            <input 
-              type="text" 
-              placeholder="Enter Room ID" 
-              value={roomId}
-              onChange={(e) => setRoomId(e.target.value)}
-              style={{ 
-                padding: '8px', 
-                marginRight: '8px',
-                border: '1px solid var(--border-color)',
-                borderRadius: '4px'
-              }}
-            />
-            <button onClick={() => joinRoom(roomId)}>Join Room</button>
-          </div>
-          <button className="primary" onClick={createRoom}>Create New Room</button>
-        </div>
+        <Lobby 
+          socket={socket}
+          onJoinRoom={joinRoom}
+          onCreateRoom={createRoom}
+        />
       ) : (
         <Room roomId={roomId} socket={socket} playerId={playerId} />
       )}
