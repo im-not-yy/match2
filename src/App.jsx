@@ -50,6 +50,8 @@ function App() {
       ) : (
         <Room roomId={roomId} socket={socket} playerId={playerId} />
       )}
+      
+      <div className="watermark">by yy</div>
     </div>
   );
 }
