@@ -14,7 +14,7 @@ function ChatBox({ socket, roomId, playerId }) {
   }, [socket]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView();
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   const handleSubmit = (e) => {
